@@ -1,0 +1,39 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: fenced
+  namespace: default
+spec:
+  runStrategy: Always
+  template:
+    spec:
+      domain:
+        cpu:
+          cores: 2
+        devices:
+          disks:
+          - disk:
+              bus: virtio
+            name: containerdisk
+          - disk:
+              bus: virtio
+            name: cloudinitdisk
+        memory:
+          guest: 6G
+        resources:
+          requests:
+            memory: 2G
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - containerDisk:
+          image: quay.io/containerdisks/fedora:latest
+        name: containerdisk
+      - cloudInitNoCloud:
+          userData: |-
+            #cloud-config
+            password: fedora
+            chpasswd: { expire: False }
+            runcmd:
+            - "sudo dnf install -y stress ; stress -m 1 --vm-bytes 1G --vm-hang 6"
+        name: cloudinitdisk
+status: {}

@@ -1,4 +1,6 @@
 
+set -x
+
 NODE=$1
 HEALTHY=${2:?"Usage: $0 <node> <readiness>, ex. `$0 node01 false`"}
 
@@ -15,7 +17,7 @@ fi
 set -x
 
 # check https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#scale-kubectl-patch
-oc patch node $NODE --patch - --subresource status <<EOJ
+oc patch node $NODE --patch-file /dev/stdin --subresource status <<EOJ
 { 
   "status": {
     "conditions": [
@@ -31,4 +33,6 @@ oc patch node $NODE --patch - --subresource status <<EOJ
   }
 }
 EOJ
-oc adm taint node $NO node.kubernetes.io/out-of-service=:NoExecute
+$HEALTHY || oc adm taint node $NODE node.kubernetes.io/out-of-service=:NoExecute
+
+oc get node $NODE -o json | jq ".status.conditions"

@@ -18,6 +18,21 @@ $ bash oob-set-node-condition.sh <node> false
 …
 ```
 
+## Test
+
+A bsaic test that illustrates how it should work
+```console
+$ bash test.sh
+…
+virtualmachine.kubevirt.io/fenced condition met
+virtualmachine.kubevirt.io "fenced" deleted
+Time from failure to remediation: 4s
+Time from remediation to running: 10s
+TOTAL: Time from failure to running: 14s
+$
+```
+
 # Questions
 
 - Is node `Ready: false` required to reschedule pods?
+- Is the test correct?
