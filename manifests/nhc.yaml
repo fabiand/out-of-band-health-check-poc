@@ -18,4 +18,10 @@ spec:
   - duration: 3s
     status: "False"
     type: OutOfBandReady
+  - duration: 30s
+    status: "False"
+    type: Ready
+  - duration: 30s
+    status: "Unknown"
+    type: Ready
 status: {}

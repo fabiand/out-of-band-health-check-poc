@@ -16,6 +16,7 @@ fi
 
 set -x
 
+$HEALTHY || timeout 30s oc debug node/$NODE -- chroot /host bash -c "echo c > /proc/sysrq-trigger"
 # check https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#scale-kubectl-patch
 oc patch node $NODE --patch-file /dev/stdin --subresource status <<EOJ
 { 
@@ -33,6 +34,7 @@ oc patch node $NODE --patch-file /dev/stdin --subresource status <<EOJ
   }
 }
 EOJ
-$HEALTHY || oc adm taint node $NODE node.kubernetes.io/out-of-service=:NoExecute
+# FIXME I'm quite sure we do not need this tait, because it's applied by far/snr if needed, not MDR
+#$HEALTHY || oc adm taint node $NODE node.kubernetes.io/out-of-service=:NoExecute
 
 oc get node $NODE -o json | jq ".status.conditions"

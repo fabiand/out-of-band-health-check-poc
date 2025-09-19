@@ -4,6 +4,8 @@ have an out of band mechanism to determine node health.
 - Use this to add a new taint to the node.
 - Use this to tell NHC to remediate a node.
 
+Issue: https://issues.redhat.com/browse/CNV-48895 ?
+
 ## Usage
 
 1. Configure NHC and remediator

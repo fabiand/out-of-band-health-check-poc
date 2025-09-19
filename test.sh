@@ -1,13 +1,13 @@
 set -e
 
 echo "assumes that vm can be scheduled, aws emulation omde"
+echo "this test is tailored for a 3 node cluster bot cluster"
 echo "this test was done with NHC and MDR"
 echo basic checks, but generally we assume that nhc and mdr are already configured properly and all nodes are helathy
-[[ $(oc get nodes -o name -l node-role.kubernetes.io/worker | wc -l) = 3 ]]
-oc apply -f manifests/nhc.yaml
-oc apply -f manifests/mdrtpl.yaml
-
 set -x
+[[ $(oc get nodes -o name -l node-role.kubernetes.io/worker | wc -l) > 1 ]]
+oc wait mcp worker --for condition=Degraded=False --for condition=Updated=True
+
 oc create -f manifests/vm.yaml
 oc wait --for condition=Ready=True -f manifests/vm.yaml
 
@@ -16,8 +16,8 @@ NODE="ip-$(oc get pods -o jsonpath="{.items[0].status.hostIP}" | tr "." "-").ec2
 # Fake that OOB is healthy
 bash oob-set-node-condition.sh $NODE true
 
-oc get -w events | grep -i -E "launcher|node|machine|health|fence" &
-oc get -w vms &
+oc get --watch-only events | grep -i -E "launcher|node|machine|health|fence|taint|drain|evict|delete" &
+oc get --watch-only vms &
 
 FAILURE_TIME=$(date +%s)
 # Fake that OOB is NOT healthy
