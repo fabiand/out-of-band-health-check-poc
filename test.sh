@@ -33,6 +33,6 @@ killall oc
 oc delete -f manifests/vm.yaml --wait=false
 set +x
 
-echo "Time from failure to remediation: $(( RECOVERY_TIME - FAILURE_TIME ))s"
-echo "Time from remediation to running: $(( RUNNING_TIME - RECOVERY_TIME ))s"
-echo "TOTAL: Time from failure to running: $(( RUNNING_TIME - FAILURE_TIME ))s"
+echo "Time from node failure to initiating node remediation: $(( RECOVERY_TIME - FAILURE_TIME ))s"
+echo "Time from initiated node remediation to VM running: $(( RUNNING_TIME - RECOVERY_TIME ))s"
+echo "TOTAL: Time from node failure to VM running: $(( RUNNING_TIME - FAILURE_TIME ))s"
