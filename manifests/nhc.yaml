@@ -1,0 +1,21 @@
+apiVersion: remediation.medik8s.io/v1alpha1
+kind: NodeHealthCheck
+metadata:
+  name: fabiand
+spec:
+  minHealthy: 0%
+  remediationTemplate:
+    apiVersion: machine-deletion-remediation.medik8s.io/v1alpha1
+    kind: MachineDeletionRemediationTemplate
+    name: group-x
+    namespace: default
+  selector:
+    matchExpressions:
+    - key: node-role.kubernetes.io/worker
+      operator: Exists
+      values: []
+  unhealthyConditions:
+  - duration: 3s
+    status: "False"
+    type: OutOfBandReady
+status: {}
