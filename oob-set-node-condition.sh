@@ -14,6 +14,7 @@ fi
 
 set -x
 
+# check https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#scale-kubectl-patch
 oc patch node $NODE --patch - --subresource status <<EOJ
 { 
   "status": {
