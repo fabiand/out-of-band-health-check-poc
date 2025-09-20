@@ -14,9 +14,9 @@ then
   ME="Heartbeat is NOT working"
 fi
 
-set -x
+# FIXME we could try to crash the node, but what is the point?
+$HEALTHY || timeout 2m oc debug -t node/$NODE -- chroot /host bash -xc "echo crashing node $NODE ; systemctl stop kubelet & echo c > /proc/sysrq-trigger"
 
-$HEALTHY || timeout 30s oc debug node/$NODE -- chroot /host bash -c "echo c > /proc/sysrq-trigger"
 # check https://kubernetes.io/docs/tasks/manage-kubernetes-objects/update-api-object-kubectl-patch/#scale-kubectl-patch
 oc patch node $NODE --patch-file /dev/stdin --subresource status <<EOJ
 { 
@@ -35,6 +35,7 @@ oc patch node $NODE --patch-file /dev/stdin --subresource status <<EOJ
 }
 EOJ
 # FIXME I'm quite sure we do not need this tait, because it's applied by far/snr if needed, not MDR
-#$HEALTHY || oc adm taint node $NODE node.kubernetes.io/out-of-service=:NoExecute
+# we need it if we test with MDR
+$HEALTHY || oc adm taint node $NODE node.kubernetes.io/out-of-service:NoExecute
 
-oc get node $NODE -o json | jq ".status.conditions"
+#oc get node $NODE -o json | jq ".status.conditions"
